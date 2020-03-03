@@ -1,0 +1,100 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+```{r}
+devtools::install_github("hadley/ggplot2")
+devtools::install_github("ropensci/plotly")
+library(ggplot2)
+library(plotly)
+packageVersion("ggplot2")
+packageVersion("plotly")
+```
+
+```{r}
+library(ggplot2)
+library(shiny)
+library(dplyr)
+library(lubridate)
+library(plotly)
+library(tidyr)
+dev_mode(TRUE)
+Australia<- readxl::read_excel("/Users/A/Documents/Shiny Apps/Australia2/Unemployment_Rate_Australia1.xlsx")
+head(Australia)
+Australia_2000<-filter(Australia,format(as.Date(Year),"%Y") >1999)
+head(Australia_2000)
+
+
+```
+
+```{r}
+p1<- ggplot(Australia_2000,aes(Australia_2000$Year,Australia_2000$`Unemployment rate Trend`,group=State,colour=State))+ 
+  geom_line(aes(size = State)) + scale_size_manual(values = c(0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.8))+theme_bw()+labs(x = "Date", 
+       y = "Unemployment Rate",
+       title = "Unemployment Rate Trend in Australia by State from Jan-2000 to Agu-2017")+scale_color_brewer(type = "seq", palette = "Spectral")
+p1
+p2<-ggplotly(p1)
+p2
+```
+
+```{r}
+p3<- plot_ly(Australia_2000) %>% 
+  
+  add_lines(x=~Australia_2000$Year, y=~Australia_2000$`Unemployment rate Trend`,color=~State,showlegend = TRUE)%>%
+  
+  layout( title = "Unemployment Rate Trend In Australia by State from Feb-1978 to Agu-2017",
+          yaxis = list(zeroline = FALSE, title = "Unemployment Rate"),
+          xaxis = list(zeroline = FALSE, title = "Date", 
+                       rangeslider = list(type = "date")))
+p3
+```
+
+
+
+
+```{r}
+
+Australia_200x<-filter(Australia,Australia$Year1 ==2015.1)
+
+  
+Australia_200x
+```
+
+```{r}
+p <- ggplot(Australia_200x,aes(State,Australia_200x$`Unemployment rate Trend Males`,fill=State))+ geom_bar(stat="identity",show.legend = F)+labs(x="",y = "Unemployment Rate",title = "Unemployment Rate in Australia by State and Gender (Trend and Seasonally)") + scale_fill_manual(values = c("grey","grey","grey","grey","grey","grey","grey","grey","dodgerBlue"))+ theme(axis.text.x=element_text(angle=45,hjust=1)) + theme_bw()
+p1<- ggplotly(p)
+p1
+
+```
+
+
+```{r}
+Australia_2016<-filter(Australia,format(as.Date(Year),"%Y") >2015)
+
+p13 <- plot_ly(Australia_2016, x = ~State, y = ~Australia_2016$`Unemployment rate Trend`, color = ~State,colors = c("#999391","#999391","#999391","#999391","#999391","#999391","#999391","#999391","#111bdb"),
+               size = ~Australia_2016$`Unemployment rate Trend`, frame = ~Year1, alpha = 1) %>% 
+  
+  add_trace(type = "scatter", mode = "markers",showlegend = FALSE) %>% 
+  
+  layout( title = "GDPUnemployment Rate Trend In Australia by State from Jan 2016 to Agu-2017",
+    yaxis = list(zeroline = FALSE, title = "Unemployement Rate"),
+         xaxis = list(zeroline = FALSE, title = ""))
+
+p13     
+```
+
+```{r}
+p10 <- plot_ly(data = Australia_2016, x = ~State, y = ~Australia_2016$`Unemployment rate Trend`, color = ~State,
+              colors = c("#999391","#999391","#999391","#999391","#999391","#999391","#999391","#999391","#111bdb"),showlegend = FALSE, frame=~Year1) %>% add_trace(type = "bar", mode = "markers",showlegend = FALSE) %>%
+  
+  layout(title = "Unemployment Rate in Australia by State and Gender (Trend and Seasonally)",
+    yaxis = list(zeroline = FALSE, title = "Unemployement Rate"),
+         xaxis = list(zeroline = FALSE, title = "State"))
+
+p10
+```
+
